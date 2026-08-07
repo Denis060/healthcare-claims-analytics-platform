@@ -65,12 +65,19 @@ These columns were checked for uniqueness during profiling and were either fully
 - encounters.payer_id -> payers.id
 - claims.primary_patient_insurance_id -> payers.id
 - claims.secondary_patient_insurance_id -> payers.id
-- claims_transactions.patient_insurance_id -> payers.id
 - Source columns include payer identifiers and match the payer dimension table.
+
+The following relationship is intentionally not enforced in the raw-to-core model:
+
+- claims_transactions.patient_insurance_id -> payers.id
+- This field is retained as a source attribute because the observed match rate is effectively 0% in the raw export and does not represent the payer master key for this dataset.
 
 ## Unresolved or intentionally excluded relationships
 
 These are not modeled as foreign keys in the proposed DDL because they are not as strongly supported or because the target table is not part of the initial core schema.
+
+- claims.referring_provider_id -> providers.id
+  - This relationship remains unconstrained because the raw source contains no non-null values in `REFERRINGPROVIDERID`; there is no usable validation set to enforce this key.
 
 - encounters.organization -> organizations table
   - There is an `ORGANIZATION` column in encounters.csv and an `ORGANIZATION` field in providers.csv, but the repository does not yet include a modeled organizations table in the initial core schema.

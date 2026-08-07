@@ -246,6 +246,11 @@ FILE_TO_TABLE = {
 }
 
 TABLE_NAMES = sorted({meta["table"].split(".")[-1] for meta in FILE_TO_TABLE.values()})
+COLUMN_ALIASES = {
+    "providers.csv": {
+        "SPECIALITY": "SPECIALTY",
+    }
+}
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -315,6 +320,13 @@ def resolve_target_tables(args: argparse.Namespace) -> list[str]:
     return list(FILE_TO_TABLE.keys())
 
 
+def normalize_input_columns(file_name: str, df: pd.DataFrame) -> pd.DataFrame:
+    aliases = COLUMN_ALIASES.get(file_name, {})
+    if aliases:
+        df = df.rename(columns=aliases)
+    return df
+
+
 def validate_required_columns(file_name: str, df: pd.DataFrame) -> None:
     required_columns = FILE_TO_TABLE[file_name]["required_columns"]
     missing = [col for col in required_columns if col not in df.columns]
@@ -352,8 +364,14 @@ def load_single_file(engine, file_name: str, chunk_size: int, truncate_first: bo
             "failure": f"CSV read error: {exc}",
         }
 
+    df = normalize_input_columns(file_name, df)
     validate_required_columns(file_name, df)
     rows_read = len(df)
+
+    # Treat blank cells in source CSVs as SQL NULLs so date/numeric columns can load
+    # without PostgreSQL raising "invalid input syntax for type" errors.
+    df = df.replace(r"^\s*$", pd.NA, regex=True)
+    df = df.where(pd.notna(df), None)
 
     columns_to_keep = FILE_TO_TABLE[file_name]["required_columns"]
     df = df.loc[:, columns_to_keep].copy()

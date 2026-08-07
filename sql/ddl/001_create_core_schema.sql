@@ -3,6 +3,16 @@
 
 CREATE SCHEMA IF NOT EXISTS core;
 
+DROP TABLE IF EXISTS core.claims_transactions;
+DROP TABLE IF EXISTS core.claims;
+DROP TABLE IF EXISTS core.procedures;
+DROP TABLE IF EXISTS core.conditions;
+DROP TABLE IF EXISTS core.encounters;
+DROP TABLE IF EXISTS core.providers;
+DROP TABLE IF EXISTS core.patients;
+DROP TABLE IF EXISTS core.payers;
+DROP TABLE IF EXISTS core.organizations;
+
 CREATE TABLE core.organizations (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
@@ -203,9 +213,6 @@ CREATE TABLE core.claims (
     CONSTRAINT fk_claims_secondary_insurance
         FOREIGN KEY (secondary_patient_insurance_id)
         REFERENCES core.payers (id),
-    CONSTRAINT fk_claims_referring_provider
-        FOREIGN KEY (referring_provider_id)
-        REFERENCES core.providers (id),
     CONSTRAINT fk_claims_supervising_provider
         FOREIGN KEY (supervising_provider_id)
         REFERENCES core.providers (id)
@@ -256,10 +263,7 @@ CREATE TABLE core.claims_transactions (
         REFERENCES core.providers (id),
     CONSTRAINT fk_claims_transactions_supervising_provider
         FOREIGN KEY (supervising_provider_id)
-        REFERENCES core.providers (id),
-    CONSTRAINT fk_claims_transactions_patient_insurance
-        FOREIGN KEY (patient_insurance_id)
-        REFERENCES core.payers (id)
+        REFERENCES core.providers (id)
 );
 
 CREATE INDEX idx_core_encounters_patient_id ON core.encounters (patient_id);
