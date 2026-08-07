@@ -1,0 +1,29 @@
+# Data
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Environment
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# BI temporary files
+*.tmp
+
+# Python
+.pytest_cache/
+.coverage
+htmlcov/
