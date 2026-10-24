@@ -1,6 +1,6 @@
 # Healthcare Claims Analytics & Population Health Intelligence Platform
 
-A production-quality portfolio project for learning and demonstrating healthcare analytics, SQL, data engineering, data quality, business intelligence, and population-health analysis using synthetic healthcare data.
+A portfolio project for learning and demonstrating healthcare analytics, SQL, data engineering, data quality, business intelligence, and population-health analysis using synthetic healthcare data.
 
 ## Project goals
 
